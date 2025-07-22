@@ -1,10 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 import CountryCard from './components/CountryCard';
+import RegionTabs from './components/RegionTabs';
 
 function App() {
   const [countries, setCountries] = useState([]); // country list
   const [searchTerm, setSearchTerm] = useState(''); // serach term for input field
   const [selectedRegion, setSelectedRegion] = useState(''); // region selection for dropdown filter
+  const searchInputRef = useRef(); // search input reference from DOM
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -13,7 +21,6 @@ function App() {
           'https://restcountries.com/v3.1/all?fields=name,flags,capital,region,population,cca3'
         );
         const data = await response.json();
-        console.log('Fetched data:', data);
         setCountries(data);
       } catch (error) {
         console.error('Error fetching countries:', error);
@@ -21,41 +28,49 @@ function App() {
     };
 
     fetchCountries();
+    searchInputRef.current?.focus();
   }, []);
 
-  const filteredCountries = countries
-    .filter((country) =>
-      country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter(
-      (country) => selectedRegion === '' || country.region === selectedRegion
-    );
+  const filteredCountries = useMemo(() => {
+    return countries
+      .filter((country) =>
+        country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .filter(
+        (country) => selectedRegion === '' || country.region === selectedRegion
+      );
+  }, [countries, searchTerm, selectedRegion]);
+
+  const handleSelectRegionChange = useCallback((region) => {
+    setSelectedRegion(region);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-8">
+      <h1 className="text-3xl font-bold text-center mb-4">
         🌍 Country Explorer
       </h1>
-      <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-center">
+      {/* Search Bar */}
+      <div className="flex flex-col md:flex-row gap-4 mb-4 items-center justify-center">
         <input
           type="text"
+          ref={searchInputRef}
+          placeholder="Search by country name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="px-4 py-2 border rounded-md shadow-sm w-72"
         />
-        <select
-          value={selectedRegion}
-          onChange={(e) => setSelectedRegion(e.target.value)}
-          className="px-4 py-2 border rounded-md shadow-sm w-72"
-        >
-          <option value="">All Regions</option>
-          <option value="Africa">Africa</option>
-          <option value="Americas">Americas</option>
-          <option value="Asia">Asia</option>
-          <option value="Europe">Europe</option>
-          <option value="Oceania">Oceania</option>
-        </select>
       </div>
+
+      {/* Region Tabs */}
+      <RegionTabs
+        selectedRegion={selectedRegion}
+        onSelectRegion={handleSelectRegionChange}
+      />
+
+      <p className="text-center text-sm text-gray-600 mb-4">
+        Showing {filteredCountries.length} countries
+      </p>
 
       {/* Country as a card */}
 
