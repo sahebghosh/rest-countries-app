@@ -1,26 +1,23 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-  useCallback,
-} from 'react';
-import CountryCard from './components/CountryCard';
-import RegionTabs from './components/RegionTabs';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import CountryDetail from './pages/CountryDetail';
+import NotFound from './pages/NotFound';
+import useDebounce from './hooks/useDebounce';
 
 function App() {
-  const [countries, setCountries] = useState([]); // country list
-  const [searchTerm, setSearchTerm] = useState(''); // serach term for input field
-  const [selectedRegion, setSelectedRegion] = useState(''); // region selection for dropdown filter
-  const searchInputRef = useRef(); // search input reference from DOM
+  const [countries, setCountries] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const [selectedRegion, setSelectedRegion] = useState('');
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch(
-          'https://restcountries.com/v3.1/all?fields=name,flags,capital,region,population,cca3'
+        const res = await fetch(
+          'https://restcountries.com/v3.1/all?fields=name,flags,region,capital,cca3,population,languages,currencies'
         );
-        const data = await response.json();
+        const data = await res.json();
         setCountries(data);
       } catch (error) {
         console.error('Error fetching countries:', error);
@@ -28,64 +25,71 @@ function App() {
     };
 
     fetchCountries();
-    searchInputRef.current?.focus();
   }, []);
 
-  const filteredCountries = useMemo(() => {
-    return countries
-      .filter((country) =>
-        country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .filter(
-        (country) => selectedRegion === '' || country.region === selectedRegion
-      );
-  }, [countries, searchTerm, selectedRegion]);
+  const handleSearchChange = useCallback((value) => {
+    setSearchTerm(value);
+  }, []);
 
   const handleSelectRegionChange = useCallback((region) => {
     setSelectedRegion(region);
   }, []);
 
+  const filteredCountries = useMemo(() => {
+    const search = debouncedSearchTerm?.toLowerCase() || '';
+
+    return countries.filter((country) => {
+      const matchesSearch = country.name?.common
+        ?.toLowerCase()
+        .includes(search);
+
+      const matchesRegion = selectedRegion
+        ? country.region === selectedRegion
+        : true;
+
+      return matchesSearch && matchesRegion;
+    });
+  }, [countries, debouncedSearchTerm, selectedRegion]);
+
+  const regionCounts = useMemo(() => {
+    const counts = {
+      All: countries.length,
+      Africa: 0,
+      Americas: 0,
+      Asia: 0,
+      Europe: 0,
+      Oceania: 0,
+      Antarctic: 0,
+    };
+
+    countries.forEach((country) => {
+      const region = country.region?.trim();
+      if (counts.hasOwnProperty(region)) {
+        counts[region]++;
+      }
+    });
+
+    return counts;
+  }, [countries]);
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-4">
-        🌍 Country Explorer
-      </h1>
-      {/* Search Bar */}
-      <div className="flex flex-col md:flex-row gap-4 mb-4 items-center justify-center">
-        <input
-          type="text"
-          ref={searchInputRef}
-          placeholder="Search by country name"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border rounded-md shadow-sm w-72"
-        />
-      </div>
-
-      {/* Region Tabs */}
-      <RegionTabs
-        selectedRegion={selectedRegion}
-        onSelectRegion={handleSelectRegionChange}
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Home
+            countries={countries}
+            filteredCountries={filteredCountries}
+            onSearchChange={handleSearchChange}
+            selectedRegion={selectedRegion}
+            onSelectRegion={handleSelectRegionChange}
+            regionCounts={regionCounts}
+          />
+        }
       />
-
-      <p className="text-center text-sm text-gray-600 mb-4">
-        Showing {filteredCountries.length} countries
-      </p>
-
-      {/* Country as a card */}
-
-      {filteredCountries && filteredCountries?.length > 0 ? (
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {filteredCountries?.map((country) => (
-            <CountryCard key={country.cca3} country={country} />
-          ))}
-        </div>
-      ) : (
-        <div className="flex justify-center items-center h-40 text-lg font-semibold text-gray-600">
-          No matching data available!!
-        </div>
-      )}
-    </div>
+      <Route path="/country/:name" element={<CountryDetail />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 

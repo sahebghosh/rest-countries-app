@@ -1,22 +1,23 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 
 const CountryCard = ({ country }) => {
-  const { name, capital, region, population, flags } = country;
-
   return (
-    <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center text-center">
-      <img
-        src={flags.png}
-        alt={`Flag of ${name.common}`}
-        className="w-24 h-16 object-cover mb-4 rounded"
-      />
-      <h2 className="text-lg font-semibold">{name.common}</h2>
-      <p className="text-sm text-gray-600">Capital: {capital?.[0] || 'N/A'}</p>
-      <p className="text-sm text-gray-600">Region: {region}</p>
-      <p className="text-sm text-gray-600">
-        Population: {population.toLocaleString()}
-      </p>
-    </div>
+    <Link to={`/country/${country.name.common}`}>
+      <div className="p-4 border rounded-lg hover:shadow-lg transition bg-white">
+        <img
+          src={country.flags.svg}
+          alt={`${country.name.common} flag`}
+          className="w-full h-40 object-cover rounded-md mb-4"
+        />
+        <h2 className="text-xl font-bold mb-1">{country.name.common}</h2>
+        <p className="text-sm text-gray-600 mb-1">
+          <strong>Region:</strong> {country.region}
+        </p>
+        <p className="text-sm text-gray-600">
+          <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}
+        </p>
+      </div>
+    </Link>
   );
 };
 
