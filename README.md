@@ -1,70 +1,75 @@
-# Getting Started with Create React App
+# 🌍 React Country Explorer App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React application to explore countries, built with a focus on **performance**, **user experience**, and **interview-ready features**.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+### 🔎 Smart Search
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Debounced search with custom `useDebounce` hook
+- Filters countries by name with minimal API reprocessing
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 🌐 Region Filters
 
-### `npm test`
+- Tab-based filtering for All, Europe, Asia, Africa, Oceania, Americas, Antarctic
+- Dynamic count displayed on each region tab
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 📜 Scroll-Based Pagination
 
-### `npm run build`
+- Infinite scroll loading using `IntersectionObserver`
+- Smooth user experience for large datasets
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🧭 Routing
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Built with `react-router-dom@6`
+- Home page `/` and dynamic Country Detail route `/country/:name`
+- Graceful 404 route handling
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 💥 Error Boundaries
 
-### `npm run eject`
+- Custom `ErrorBoundary` component wraps risky UI
+- Prevents complete app crash on runtime errors
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 🎯 Performance Optimizations
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Used `useMemo`, `useCallback`, `React.memo` to prevent unnecessary renders
+- Modular, clean architecture
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 💄 Final UI Polish
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Responsive design using Tailwind CSS
+- Country cards grid with flag, capital, region
+- Country detail page with flag, region, capital, population, currency, and languages
+- Subtle UX touches (hover effects, spinners, clear layout)
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🛠️ Tech Stack
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- React (v18+)
+- React Router DOM v6
+- Tailwind CSS 3.x
+- REST Countries API: [https://restcountries.com](https://restcountries.com)
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🧪 How to Run
 
-### Analyzing the Bundle Size
+```bash
+npm install
+npm start
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Visit http://localhost:3000
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 👨‍💻 Developer
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Saheb Ghosh
+Frontend Developer (React/Angular)
